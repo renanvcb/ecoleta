@@ -1,6 +1,9 @@
 const express = require('express')
 const server = express()
 
+//Using database
+const db = require("./database/db")
+
 //Setup public firectory
 server.use(express.static("public"))
 
@@ -24,7 +27,16 @@ server.get("/create-point", (req, res) => {
 
 //Setup search results
 server.get("/search", (req, res) => {
-    return res.render("search-results.html")
+    //Get data from DB
+    db.all(`SELECT * FROM places`, function(err, rows) {
+        if(err) {
+            return console.log(err)
+        }
+        const total = rows.length
+        // console.log(rows)
+        //showing html page with data from db
+        return res.render("search-results.html", { places: rows, total})
+    })
 })
 
 //Starting server
